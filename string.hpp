@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <istream>
 
 
 class String{
@@ -20,7 +21,20 @@ public:
 
     [[nodiscard]] uint16_t capacity() const;
 
-    String substr(uint16_t = 0, uint16_t = -1) const;
+    [[nodiscard]] String substr(uint16_t = 0, int16_t = -1) const;
+
+    [[nodiscard]] bool search(const String&) const;
+
+    [[nodiscard]] int find(const String&) const;
+
+    void insert(const String&, int16_t = -1);
+
+    void cut(uint16_t = 0, int16_t = -1) const;
+
+
+    template <typename T, typename... Tpack>
+    String format(T, Tpack...) const;
+
 
     char& operator[](uint16_t) const;
 
@@ -38,7 +52,11 @@ public:
 
     void operator = (const String&);
 
+    [[nodiscard]] bool operator == (const String&) const;
+
     friend std::ostream &operator <<(std::ostream&, const String&);
+
+    friend std::istream &operator >>(std::istream&, const String&);
 
 
 

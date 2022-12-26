@@ -1,13 +1,15 @@
 #include "string.hpp"
 
 
-String::String() : m_Buff(NULL), m_Size(0), m_Cap(1){}
+String::String() : m_Size(0), m_Cap(1){ m_Buff[0] = char(NULL); }
 
 
 // String::String(const char c) : m_Size(0) {}
 
 
 String::String(const char *other) : m_Cap(1){
+    // printf("Constructing!\n");
+
     for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
         if(m_Size >= m_Cap) doubleStr();
 
@@ -46,7 +48,7 @@ uint16_t String::capacity() const{
 }
 
 
-String String::substr(uint16_t index, uint16_t len) const{
+String String::substr(uint16_t index, int16_t len) const{
     len = len == -1 ? m_Size : len;
 
     char *ret = new char[len+1];
@@ -55,7 +57,54 @@ String String::substr(uint16_t index, uint16_t len) const{
         ret[i] = m_Buff[index+i];
     ret[len] = '\0';
 
-    return ret;
+    String r = ret;
+    delete[] ret;
+    return r;
+}
+
+
+bool String::search(const String &toFind) const{
+    int limit = m_Size - toFind.m_Size - 1;
+
+    for(int i = 0; i < limit; i++)
+        if(substr(i, toFind.m_Size) == toFind) return true;
+
+    return false;
+}
+
+
+int String::find(const String& toFind) const{
+    int limit = m_Size - toFind.m_Size - 1;
+
+    for(int i = 0; i < limit; i++)
+        if(substr(i, toFind.m_Size) == toFind) return i;
+
+    return -1;
+}
+
+
+void String::insert(const String &toIns, int16_t pos){
+    pos = pos == -1 ? m_Size : pos;
+    
+    String end = substr(pos);
+
+    uint16_t limit = pos + toIns.m_Size+ end.m_Size;
+
+    for(m_Size = pos < m_Size ? pos : m_Size; m_Size < limit; m_Size++){
+        if(m_Size >= m_Cap) doubleStr();
+
+        if(m_Size < pos) m_Buff[m_Size] = ' ';
+        else m_Buff[m_Size] = m_Size - pos < toIns.m_Size ? toIns[m_Size - pos] : end[m_Size - pos - toIns.m_Size];
+    }
+
+    m_Buff[m_Size] = '\0';
+}
+
+
+
+template <typename T, typename... Tpack>
+String String::format(T first, Tpack... rest) const{
+
 }
 
 
@@ -115,11 +164,12 @@ void String::operator+=(const char c){
 
 
 void String::operator=(const char *other){
+    // printf("Reconsing!\nS: %d\nC: %d\n", m_Size, m_Cap);
 
     for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
         if(m_Size >= m_Cap) doubleStr();
 
-        m_Buff[m_Size] = other[m_Size];
+        m_Buff[m_Size] = other[m_Size];;
     }
     m_Buff[m_Size] = '\0';
 
@@ -140,8 +190,25 @@ void String::operator=(const String &other){
 }
 
 
+bool String::operator==(const String &other) const{
+    if(m_Size == other.m_Size){
+        for(int i = 0; i < m_Size; i++)
+            if(m_Buff[i] != other[i]) return false;
+
+        return true;
+    }
+
+    return false;
+}
+
+
+
 std::ostream &operator <<(std::ostream &os, const String &s){
     return os << s.m_Buff;
+}
+
+std::istream &operator >>(std::istream &is, const String &s){
+    return is >> s.m_Buff;
 }
 
 

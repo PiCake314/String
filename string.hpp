@@ -40,33 +40,30 @@ public:
 
 
 
-    String format() const{ return m_Buff; }
-
+    void format() const{}
     template <typename T, typename... Tpack>
-    String format(T first, Tpack... rest){
+    void format(T first, Tpack... rest){
+        int ind = find('%');
 
-        String ret = m_Buff;
-        int ind = ret.find('%');
+        if(ind == -1) return;
 
-        if(ind == -1) return ret;
-
-        switch (ret[ind+1]){
+        switch (m_Buff[ind+1]){
             case 'c':
-                ret.cut(ind, 2);
-                ret.insert((first), ind);
+                cut(ind, 2);
+                insert((first), ind);
                 break;
 
             case 'C':
                 break;
 
             case 'd':
-                ret.cut(ind, 2);
-                ret.insert(toString((first)), ind);
+                cut(ind, 2);
+                insert(toString((first)), ind);
                 break;
 
             case 'i':
-                ret.cut(ind, 2);
-                ret.insert(toString((first)), ind);
+                cut(ind, 2);
+                insert(toString((first)), ind);
                 break;
 
             case 'o':
@@ -74,8 +71,8 @@ public:
                 break;
 
             case 'u':
-                ret.cut(ind, 2);
-                ret.insert(toString((first)), ind);
+                cut(ind, 2);
+                insert(toString((first)), ind);
                 break;
 
             case 'x':
@@ -86,14 +83,14 @@ public:
             case 'E':
             case 'f':
             case 'F':
-                ret.cut(ind, 2);
-                ret.insert(toString((first)), ind);
+                cut(ind, 2);
+                insert(toString((first)), ind);
                 break;
 
             case 'g':
             case 'G':
-                ret.cut(ind, 2);
-                ret.insert(toString((first)), ind);
+                cut(ind, 2);
+                insert(toString((first)), ind);
                 break;
 
             case 'a':
@@ -107,20 +104,20 @@ public:
                 break;
 
             case 's':
-                ret.cut(ind, 2);
-                ret.insert(first, ind);
+                cut(ind, 2);
+                insert(first, ind);
                 break;
 
             case 'S':
-                ret.cut(ind, 2);
-                ret.insert(first, ind);
+                cut(ind, 2);
+                insert(first, ind);
                 break;
 
             case 'z':
                 break;
         }
 
-        return ret.format(rest...);
+        format(rest...);
     }
 
 
@@ -140,6 +137,7 @@ public:
 
     void operator = (const String&);
 
+    [[nodiscard]] bool operator == (const char*) const;
     [[nodiscard]] bool operator == (const String&) const;
 
     friend std::ostream &operator <<(std::ostream&, const String&);

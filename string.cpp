@@ -87,9 +87,20 @@ bool String::search(const String &toFind) const{
 int String::find(const String& toFind) const{
     int limit = m_Size - toFind.m_Size - 1;
 
-    for(int i = 0; i < limit; i++)
-        if(substr(i, toFind.m_Size) == toFind) return i;
+    char *sub = new char[toFind.m_Size+1];
 
+    for(int i = 0; i < limit; i++){
+        for(int j = 0; j < toFind.m_Size; j++)
+            sub[j] = m_Buff[i+j];
+        sub[toFind.m_Size] = '\0';
+
+        if(toFind == sub){
+            delete[] sub;
+            return i;
+        }
+    }
+
+    delete[] sub;
     return -1;
 }
 
@@ -247,6 +258,15 @@ void String::operator=(const String &other){
     // printf("Recons!\n");
 }
 
+
+bool String::operator==(const char* other) const{
+    for(int i = 0; i < m_Size && other[i] != '\0'; i++)
+        if(m_Buff[i] != other[i]) return false;
+
+    return true;
+
+    return false;
+}
 
 bool String::operator==(const String &other) const{
     if(m_Size == other.m_Size){

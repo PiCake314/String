@@ -1,14 +1,23 @@
 #include "string.hpp"
 
 
-String::String() : m_Size(0), m_Cap(1){ m_Buff[0] = char(NULL); }
+String::String() : m_Size(0), m_Cap(1){
+    m_Buff[0] = char(NULL); 
+    // printf("Default!\n");
+}
 
 
-// String::String(const char c) : m_Size(0) {}
+String::String(const char c) : m_Size(1), m_Cap(2){
+    delete[] m_Buff;
+    m_Buff = new char[2];
+    m_Buff[0] = c;
+    m_Buff[1] = '\0';
+
+    // printf("Char'd!\n");
+}
 
 
 String::String(const char *other) : m_Cap(1){
-    // printf("Constructing!\n");
 
     for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
         if(m_Size >= m_Cap) doubleStr();
@@ -17,7 +26,7 @@ String::String(const char *other) : m_Cap(1){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Constructed!\n");
+    printf("Constructed!\n");
 }
 
 
@@ -29,6 +38,8 @@ String::String(const String &other) : m_Cap(1){
         m_Buff[m_Size] = other[m_Size];
     }
     m_Buff[m_Size] = '\0';
+
+    // printf("Copied!\n");
 }
 
 
@@ -85,7 +96,7 @@ int String::find(const String& toFind) const{
 
 void String::insert(const String &toIns, int16_t pos){
     pos = pos == -1 ? m_Size : pos;
-    
+
     String end = substr(pos);
 
     uint16_t limit = pos + toIns.m_Size+ end.m_Size;
@@ -101,11 +112,57 @@ void String::insert(const String &toIns, int16_t pos){
 }
 
 
+uint16_t String::count(String c){
+    int limit = m_Size - c.m_Size - 1;
 
-template <typename T, typename... Tpack>
-String String::format(T first, Tpack... rest) const{
+    int total = 0;
+    for(int i = 0; i < limit; i++)
+        if(substr(i, c.m_Size) == c) total++;
 
+    return total;
 }
+
+
+void String::cut(uint16_t index, int16_t len){
+    if(len == -1){
+        m_Size = index;
+        m_Buff[index] = '\0';
+        return;
+    }
+
+    int limit = m_Size - len;
+
+    for(m_Size = index; m_Size < limit; m_Size++)
+        m_Buff[m_Size] = m_Buff[m_Size+len];
+
+    m_Buff[m_Size] = '\0';
+}
+
+
+// String String::format(){ return m_Buff; }
+
+// template <typename T, typename... Tpack>
+// String String::format(T first, Tpack... rest) const{
+
+//     String ret = m_Buff;
+//     int ind = ret.find('%');
+
+//     if(ind == -1) return ret;
+
+//     switch (ret[ind+1]){
+//         // case 'd':
+//         //     ret.cut(ind, 2);
+//         //     ret.insert();
+//         //     break;
+
+
+//         case 'c':
+//             ret.insert(first, ind);
+//             break;
+//     }
+
+//     return ret.format(rest...);
+// }
 
 
 char& String::operator[](uint16_t index) const{
@@ -150,7 +207,8 @@ void String::operator+=(const String &other){
 String operator+(const String &us, const char c){
     String ret = us;
     if(ret.m_Size+1 >= ret.m_Cap) ret.doubleStr();
-    ret[ret.m_Size] = c;
+    ret[ret.m_Size++] = c;
+    ret[ret.m_Size] = '\0';
 
     return ret;
 }
@@ -209,6 +267,13 @@ std::ostream &operator <<(std::ostream &os, const String &s){
 
 std::istream &operator >>(std::istream &is, const String &s){
     return is >> s.m_Buff;
+}
+
+
+
+String String::toString(int num){
+    if(num == 0) return "";
+    return toString(num/10) + char((num%10)+48);
 }
 
 

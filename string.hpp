@@ -121,6 +121,19 @@ public:
     }
 
 
+
+    void toUpper();
+
+    String upper();
+
+    void toLower();
+
+    String lower();
+
+    void toTitle();
+
+    String title();
+
     char& operator[](uint16_t) const;
 
     char& at(uint16_t) const;

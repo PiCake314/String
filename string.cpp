@@ -26,7 +26,7 @@ String::String(const char *other) : m_Cap(1){
     }
     m_Buff[m_Size] = '\0';
 
-    printf("Constructed!\n");
+    // printf("Constructed!\n");
 }
 
 
@@ -150,30 +150,74 @@ void String::cut(uint16_t index, int16_t len){
 }
 
 
-// String String::format(){ return m_Buff; }
-
-// template <typename T, typename... Tpack>
-// String String::format(T first, Tpack... rest) const{
-
-//     String ret = m_Buff;
-//     int ind = ret.find('%');
-
-//     if(ind == -1) return ret;
-
-//     switch (ret[ind+1]){
-//         // case 'd':
-//         //     ret.cut(ind, 2);
-//         //     ret.insert();
-//         //     break;
+void String::toUpper(){
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] >= 'a' && m_Buff[i] <= 'z')
+            m_Buff[i] -= 32;
+}
 
 
-//         case 'c':
-//             ret.insert(first, ind);
-//             break;
-//     }
+String String::upper(){
+    char *ret = new char[m_Size+1];
 
-//     return ret.format(rest...);
-// }
+    for(int i = 0; i < m_Size; i++){
+        ret[i] = m_Buff[i];
+        if(ret[i] >= 'a' && ret[i] <= 'z')
+            ret[i] -= 32;
+    }
+    ret[m_Size] = '\0';
+    String r = ret;
+    delete[] ret;
+    return r;
+}
+
+
+void String::toLower(){
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] >= 'A' && m_Buff[i] <= 'Z')
+            m_Buff[i] += 32;
+}
+
+
+String String::lower(){
+    char *ret = new char[m_Size+1];
+
+    for(int i = 0; i < m_Size; i++){
+        ret[i] = m_Buff[i];
+        if(ret[i] >= 'A' && ret[i] <= 'Z')
+            ret[i] += 32;
+    }
+    ret[m_Size] = '\0';
+    String r = ret;
+    delete[] ret;
+    return r;
+}
+
+
+void String::toTitle(){
+    if(*m_Buff >= 'a' && *m_Buff <= 'z') *m_Buff -= 32;
+
+    for(int i = 1; i < m_Size; i++)
+        if(m_Buff[i] >= 'a' && m_Buff[i] <= 'z' && m_Buff[i-1] == ' ')
+            m_Buff[i] -= 32;
+}
+
+String String::title(){
+    char *ret = new char[m_Size+1];
+
+    for(int i = 0; i < m_Size; i++) ret[i] = m_Buff[i];
+    ret[m_Size] = '\0';
+
+    if(*ret >= 'a' && *ret <= 'z') *ret -= 32;
+
+    for(int i = 1; i < m_Size; i++)
+        if(ret[i] >= 'a' && ret[i] <= 'z' && ret[i-1] == ' ')
+            ret[i] -= 32;
+
+    String r = ret;
+    delete[] ret;
+    return r;
+}
 
 
 char& String::operator[](uint16_t index) const{

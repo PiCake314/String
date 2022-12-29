@@ -2,7 +2,7 @@
 
 #include <ostream>
 #include <istream>
-#include <type_traits>
+#include <unordered_map>
 
 class String{
     char *m_Buff = new char[1];
@@ -13,6 +13,10 @@ class String{
     const String& toString(const String& s) { return s; }
     void doubleStr();
 
+
+    String (*enc)(String);
+    String (*dec)(String);
+
 public:
     String();
     String(const char);
@@ -22,15 +26,17 @@ public:
     ~String();
 
 
-    [[nodiscard]] uint16_t length() const;
+    uint16_t length() const;
 
-    [[nodiscard]] uint16_t capacity() const;
+    uint16_t capacity() const;
 
     [[nodiscard]] String substr(uint16_t = 0, int16_t = -1) const;
 
-    [[nodiscard]] bool search(const String&) const;
+    bool search(const String&) const;
 
-    [[nodiscard]] int find(const String&) const;
+    int find(const String&) const;
+
+    [[nodiscard]] int rfind(const String&) const;
 
     void insert(const String&, int16_t = -1);
 
@@ -38,6 +44,101 @@ public:
 
     void cut(uint16_t = 0, int16_t = -1);
 
+
+    /**
+     * @brief Creates an array of strings using the given delimiter
+     * 
+     * @param delimiter
+     * @return A dynamically allocated String array
+     */
+    String* split(String);
+
+    void join(String[]);
+
+
+    void toUpper();
+    [[nodiscard]] String upper() const;
+    bool isUpper() const;
+
+
+    void toLower();
+    [[nodiscard]] String lower() const;
+    bool isLower() const;
+
+
+    void title();
+    [[nodiscard]] String titled() const;
+    bool isTitle() const;
+
+
+    void capitalize();
+    [[nodiscard]] String capitalized() const;
+    bool isCapitalize() const;
+
+
+    void strip();
+    [[nodiscard]] String stripped();
+    // void stripVer2EXPERIMENTAL();
+
+    void lstrip();
+    [[nodiscard]] String lstripped();
+
+    void rstrip();
+    [[nodiscard]] String rstripped();
+
+
+    bool startswith(const String&) const;
+    bool endsWith(const String&) const;
+
+
+    bool isAlpha() const;
+
+    bool isDecimal() const;
+
+    bool isAlNum() const;
+
+    bool isSpace() const;
+
+    void setEncryptionFunc(String(*_)(String));
+
+    void setDecryptionFunc(String(*_)(String));
+
+    void encrypt();
+
+    void decrypt();
+
+    char& operator[](uint16_t) const;
+
+    char& at(uint16_t) const;
+
+    void forEach(void(*)(char&));
+
+    friend String operator +(const String&, const String&);
+
+    void operator += (const String&);
+
+    friend String operator +(const String&, const char);
+
+    void operator += (const char);
+
+    void operator = (const char*);
+
+    void operator = (const String&);
+
+    bool operator == (const char*) const;
+    bool operator == (const String&) const;
+
+    bool operator != (const char*) const;
+    bool operator != (const String&) const;
+
+
+    friend std::ostream &operator <<(std::ostream&, const String&);
+
+    friend std::istream &operator >>(std::istream&, const String&);
+
+
+    char* begin() const;
+    char* end() const;
 
 
     void format() const{}
@@ -121,41 +222,11 @@ public:
     }
 
 
+    // template <typename T>
+    // String format_map(std::unordered_map<String, T>){
 
-    void toUpper();
+    // }
 
-    String upper();
-
-    void toLower();
-
-    String lower();
-
-    void toTitle();
-
-    String title();
-
-    char& operator[](uint16_t) const;
-
-    char& at(uint16_t) const;
-
-    friend String operator +(const String&, const String&);
-
-    void operator += (const String&);
-
-    friend String operator +(const String&, const char);
-
-    void operator += (const char);
-
-    void operator = (const char*);
-
-    void operator = (const String&);
-
-    [[nodiscard]] bool operator == (const char*) const;
-    [[nodiscard]] bool operator == (const String&) const;
-
-    friend std::ostream &operator <<(std::ostream&, const String&);
-
-    friend std::istream &operator >>(std::istream&, const String&);
 
 };
 

@@ -70,6 +70,7 @@ String String::substr(uint16_t index, int16_t len) const{
 
     String r = ret;
     delete[] ret;
+
     return r;
 }
 
@@ -85,11 +86,11 @@ bool String::search(const String &toFind) const{
 
 
 int String::find(const String& toFind) const{
-    int limit = m_Size - toFind.m_Size - 1;
+    int limit = m_Size - toFind.m_Size;
 
     char *sub = new char[toFind.m_Size+1];
 
-    for(int i = 0; i < limit; i++){
+    for(int i = 0; i <= limit; i++){
         for(int j = 0; j < toFind.m_Size; j++)
             sub[j] = m_Buff[i+j];
         sub[toFind.m_Size] = '\0';
@@ -102,6 +103,25 @@ int String::find(const String& toFind) const{
 
     delete[] sub;
     return -1;
+}
+
+
+int String::rfind(const String& toFind) const{
+    int limit = m_Size - toFind.m_Size;
+
+    char *sub = new char[toFind.m_Size+1];
+
+    int last = -1;
+    for(int i = 0; i <= limit; i++){
+        for(int j = 0; j < toFind.m_Size; j++)
+            sub[j] = m_Buff[i+j];
+        sub[toFind.m_Size] = '\0';
+
+        if(toFind == sub) last = i;
+    }
+
+    delete[] sub;
+    return last;
 }
 
 
@@ -150,6 +170,36 @@ void String::cut(uint16_t index, int16_t len){
 }
 
 
+String* String::split(String delimiter){
+    if(delimiter.m_Size >= m_Size) return {};
+
+    bool flag = substr(0, delimiter.m_Size) != delimiter;
+    uint16_t size = 0;
+    for(int i = 0; i <= m_Size - delimiter.m_Size; i++)
+        if(substr(i, delimiter.m_Size) == delimiter) flag = true;
+        else if(flag){
+            size++;
+            flag = false;
+        }
+
+
+    String *array = new String[size];
+    int i = 0;
+    while(i <= m_Size - delimiter.m_Size && substr(i, delimiter.m_Size) == delimiter) i += delimiter.m_Size;
+
+    for(int prev = i, ind = 0; i <= m_Size; i++){
+        if(substr(i, delimiter.m_Size) == delimiter || i == m_Size){
+            array[ind] = substr(prev, i - prev);
+            ind++;
+
+            while(i <= m_Size - delimiter.m_Size && substr(i, delimiter.m_Size) == delimiter) i += delimiter.m_Size;
+            prev = i;
+        }
+    }
+    return array;
+}
+
+
 void String::toUpper(){
     for(int i = 0; i < m_Size; i++)
         if(m_Buff[i] >= 'a' && m_Buff[i] <= 'z')
@@ -157,18 +207,18 @@ void String::toUpper(){
 }
 
 
-String String::upper(){
-    char *ret = new char[m_Size+1];
+String String::upper() const{
+    String ret(m_Buff);
+    ret.toUpper();
+    return ret;
+}
 
-    for(int i = 0; i < m_Size; i++){
-        ret[i] = m_Buff[i];
-        if(ret[i] >= 'a' && ret[i] <= 'z')
-            ret[i] -= 32;
-    }
-    ret[m_Size] = '\0';
-    String r = ret;
-    delete[] ret;
-    return r;
+
+bool String::isUpper() const{
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] >= 'a' && m_Buff[i] <= 'z') return false;
+
+    return true;
 }
 
 
@@ -179,22 +229,22 @@ void String::toLower(){
 }
 
 
-String String::lower(){
-    char *ret = new char[m_Size+1];
-
-    for(int i = 0; i < m_Size; i++){
-        ret[i] = m_Buff[i];
-        if(ret[i] >= 'A' && ret[i] <= 'Z')
-            ret[i] += 32;
-    }
-    ret[m_Size] = '\0';
-    String r = ret;
-    delete[] ret;
-    return r;
+String String::lower() const{
+    String ret(m_Buff);
+    ret.toLower();
+    return ret;
 }
 
 
-void String::toTitle(){
+bool String::isLower() const{
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] >= 'A' && m_Buff[i] <= 'Z') return false;
+
+    return true;
+}
+
+
+void String::title(){
     if(*m_Buff >= 'a' && *m_Buff <= 'z') *m_Buff -= 32;
 
     for(int i = 1; i < m_Size; i++)
@@ -202,21 +252,187 @@ void String::toTitle(){
             m_Buff[i] -= 32;
 }
 
-String String::title(){
-    char *ret = new char[m_Size+1];
 
-    for(int i = 0; i < m_Size; i++) ret[i] = m_Buff[i];
-    ret[m_Size] = '\0';
+String String::titled() const{
+    String ret(m_Buff);
+    ret.title();
+    return ret;
+}
 
-    if(*ret >= 'a' && *ret <= 'z') *ret -= 32;
+
+bool String::isTitle() const{
+    if(*m_Buff >= 'a' && *m_Buff <= 'z') return false;
 
     for(int i = 1; i < m_Size; i++)
-        if(ret[i] >= 'a' && ret[i] <= 'z' && ret[i-1] == ' ')
-            ret[i] -= 32;
+        if(m_Buff[i] >= 'a' && m_Buff[i] <= 'z' && m_Buff[i-1] == ' ')
+            return false;
 
-    String r = ret;
-    delete[] ret;
-    return r;
+    return true;
+}
+
+
+void String::capitalize(){
+    if(*m_Buff >= 'a' && *m_Buff <= 'z') (*m_Buff) -= 32;
+
+    for(int i = 1; i < m_Size; i++)
+        if(m_Buff[i] >= 'A' && m_Buff[i] <= 'Z') m_Buff[i] += 32;
+}
+
+
+String String::capitalized() const{
+    String ret(m_Buff);
+    ret.capitalize();
+    return ret;
+}
+
+
+bool String::isCapitalize() const{
+    if(*m_Buff >= 'a' && *m_Buff <= 'z') return false;
+
+    for(int i = 1; i < m_Size; i++)
+        if(m_Buff[i] >= 'A' && m_Buff[i] <= 'Z') return false;
+
+    return true;
+}
+
+
+void String::strip(){
+    for(; m_Size-1 >= 0 &&  m_Buff[m_Size-1] == ' '; m_Size--);
+
+    int start = 0;
+    for(; m_Buff[start] == ' '; start++, m_Size--);
+
+    for(int i = 0; i < m_Size; i++)
+        m_Buff[i] = m_Buff[i+start];
+
+    m_Buff[m_Size] = '\0';
+}
+
+
+// void String::stripVer2EXPERIMENTAL(){
+//     for(; *m_Buff == ' '; m_Buff++, m_Cap--, m_Size--, d++);
+//     for(; m_Size-1 >= 0 && m_Buff[m_Size-1] == ' '; m_Size--);
+//     m_Buff[m_Size] = '\0';
+// }
+
+
+String String::stripped(){
+    String ret(m_Buff);
+    ret.strip();
+    return ret;
+}
+
+
+void String::lstrip(){
+    int start = 0;
+    for(; m_Buff[start] == ' '; start++);
+
+    m_Size -= start;
+    for(int i = 0; i < m_Size; i++)
+        m_Buff[i] = m_Buff[i+start];
+
+    m_Buff[m_Size] = '\0';
+}
+
+
+String String::lstripped(){
+    String ret(m_Buff);
+    ret.lstrip();
+    return ret;
+}
+
+
+void String::rstrip(){
+    int end = 0;
+    for(int i = m_Size-1; m_Buff[i] == ' '; i--, end++);
+
+    m_Size -= end;
+    m_Buff[m_Size] = '\0';
+}
+
+
+String String::rstripped(){
+    String ret(m_Buff);
+    ret.rstrip();
+    return ret;
+}
+
+
+bool String::startswith(const String &s) const{
+    return m_Size >= s.m_Size && substr(0, s.m_Size) == s;
+}
+
+
+bool String::endsWith(const String &s) const{
+    return m_Size >= s.m_Size && substr(m_Size-s.m_Size) == s;
+}
+
+
+bool String::isAlpha() const{
+    for(int i = 0; i < m_Size; i++)
+        if((m_Buff[i] < 'A' || m_Buff[i] > 'Z')
+        && (m_Buff[i] <'a' || m_Buff[i] > 'z'))
+            return false;
+
+    return true;
+}
+
+
+bool String::isDecimal() const{
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] < '0' || m_Buff[i] > '9')
+            return false;
+
+    return true;
+}
+
+
+bool String::isAlNum() const{
+    return isDecimal() || isAlpha();
+}
+
+
+bool String::isSpace() const{
+    for(int i = 0; i < m_Size; i++)
+        if(m_Buff[i] != ' ' && m_Buff[i] != '\t' && m_Buff[i] != '\n')
+            return false;
+
+    return true;
+}
+
+
+void String::setEncryptionFunc(String(*func)(String)) { enc = func; }
+
+void String::setDecryptionFunc(String(*func)(String)) { dec = func; }
+
+
+void String::encrypt(){
+    String temp = enc(m_Buff);
+
+    m_Size = temp.m_Size;
+    m_Cap = temp.m_Cap;
+
+    delete[] m_Buff;
+    m_Buff = new char[m_Size+1];
+
+    for(int i = 0; i < m_Size; i++)
+        m_Buff[i] = temp.m_Buff[i];
+    m_Buff[m_Size] = '\0';
+}
+
+
+void String::decrypt(){
+    String temp = dec(m_Buff);
+
+    m_Size = temp.m_Size;
+    m_Cap = temp.m_Cap;
+
+    delete[] m_Buff;
+    m_Buff = new char[m_Size+1];
+
+    for(int i = 0; i < m_Size; i++)
+        m_Buff[i] = temp.m_Buff[i];
+    m_Buff[m_Size] = '\0';
 }
 
 
@@ -227,6 +443,12 @@ char& String::operator[](uint16_t index) const{
 
 char& String::at(uint16_t index) const{
     return m_Buff[index];
+}
+
+
+void String::forEach(void(*func)(char&)){
+    for(uint16_t i = 0; i < m_Size; i++)
+        func(m_Buff[i]);
 }
 
 
@@ -308,8 +530,6 @@ bool String::operator==(const char* other) const{
         if(m_Buff[i] != other[i]) return false;
 
     return true;
-
-    return false;
 }
 
 bool String::operator==(const String &other) const{
@@ -324,6 +544,24 @@ bool String::operator==(const String &other) const{
 }
 
 
+bool String::operator!=(const char* other) const{
+    for(int i = 0; i < m_Size && other[i] != '\0'; i++)
+        if(m_Buff[i] != other[i]) return true;
+
+    return false;
+}
+
+bool String::operator!=(const String &other) const{
+    if(m_Size == other.m_Size){
+        for(int i = 0; i < m_Size; i++)
+            if(m_Buff[i] != other[i]) return true;
+
+        return false;
+    }
+
+    return true;
+}
+
 
 std::ostream &operator <<(std::ostream &os, const String &s){
     return os << s.m_Buff;
@@ -332,6 +570,10 @@ std::ostream &operator <<(std::ostream &os, const String &s){
 std::istream &operator >>(std::istream &is, const String &s){
     return is >> s.m_Buff;
 }
+
+
+char* String::begin() const{ return m_Buff; }
+char* String::end() const{ return m_Buff + m_Size; }
 
 
 

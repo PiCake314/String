@@ -1,13 +1,13 @@
 #include "string.hpp"
 
 
-String::String() : m_Size(0), m_Cap(1){
+String::String() : m_Size(0), m_Cap(1), enc(nullptr), dec(nullptr){
     m_Buff[0] = char(NULL); 
     // printf("Default!\n");
 }
 
 
-String::String(const char c) : m_Size(1), m_Cap(2){
+String::String(const char c) : m_Size(1), m_Cap(2), enc(nullptr), dec(nullptr){
     delete[] m_Buff;
     m_Buff = new char[2];
     m_Buff[0] = c;
@@ -17,7 +17,7 @@ String::String(const char c) : m_Size(1), m_Cap(2){
 }
 
 
-String::String(const char *other) : m_Cap(1){
+String::String(const char *other) : m_Cap(1), enc(nullptr), dec(nullptr){
 
     for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
         if(m_Size >= m_Cap) doubleStr();
@@ -26,11 +26,11 @@ String::String(const char *other) : m_Cap(1){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Constructed!\n");
+    printf("Constructed!\n");
 }
 
 
-String::String(const String &other) : m_Cap(1){
+String::String(const String &other) : m_Cap(1), enc(nullptr), dec(nullptr){
 
     for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
         if(m_Size >= m_Cap) doubleStr();
@@ -197,6 +197,50 @@ String* String::split(String delimiter){
         }
     }
     return array;
+}
+
+
+void String::join(String arr[], uint16_t n){
+    if(n <= 0){
+        operator=("");
+        return;
+    }
+
+    String delimiter = m_Buff;
+
+    operator=(*arr);
+    for(int i = 1; i < n; i++){
+        if(m_Size >= m_Cap) doubleStr();
+
+        operator+=((delimiter + arr[i]));
+    }
+}
+
+
+void String::join(std::vector<String> vec){
+    int lim = vec.size();
+
+    if(lim <= 0){
+        operator=("");
+        return;
+    }
+
+    String delimiter = m_Buff;
+
+    operator=(vec[0]);
+    for(int i = 1; i < lim; i++){
+        if(m_Size >= m_Cap) doubleStr();
+
+        operator+=((delimiter + vec[i]));
+    }
+}
+
+
+void String::forEach(void(*func)(char&), int lim){
+    if(lim == -1) lim = m_Size;
+
+    for(uint16_t i = 0; i < lim; i++)
+        func(m_Buff[i]);
 }
 
 
@@ -407,6 +451,8 @@ void String::setDecryptionFunc(String(*func)(String)) { dec = func; }
 
 
 void String::encrypt(){
+    if(!enc) return;
+
     String temp = enc(m_Buff);
 
     m_Size = temp.m_Size;
@@ -443,12 +489,6 @@ char& String::operator[](uint16_t index) const{
 
 char& String::at(uint16_t index) const{
     return m_Buff[index];
-}
-
-
-void String::forEach(void(*func)(char&)){
-    for(uint16_t i = 0; i < m_Size; i++)
-        func(m_Buff[i]);
 }
 
 

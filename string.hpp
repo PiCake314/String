@@ -6,12 +6,12 @@
 #include <vector>
 
 class String{
-    char *m_Buff = new char[1];
+    char *m_Buff = new char[2];
     uint16_t m_Size;
     uint16_t m_Cap;
 
-    String toString(int);
-    const String& toString(const String& s) { return s; }
+    // String toString(int);
+    // const String& toString(const String& s) { return s; }
     void doubleStr();
 
 
@@ -20,12 +20,15 @@ class String{
 
 public:
     String();
-    String(const char);
     String(const char*);
     String(const String&);
+    String(const std::string&);
+    explicit String(const char);
+    explicit String(int);
+    explicit String(float, int = 2);
+    explicit String(double, int = 5);
 
     ~String();
-
 
 
     /**
@@ -254,6 +257,9 @@ public:
     bool isSpace() const;
 
 
+    // char *cString() const;
+
+
     /**
      * @brief Set the Encryption Func object.
      */
@@ -281,21 +287,21 @@ public:
 
     friend String operator +(const String&, const String&);
 
-    void operator += (const String&);
+    void operator +=(const String&);
 
     friend String operator +(const String&, const char);
 
-    void operator += (const char);
+    void operator +=(const char);
 
-    void operator = (const char*);
+    void operator =(const char*);
 
-    void operator = (const String&);
+    void operator =(const String&);
 
-    bool operator == (const char*) const;
-    bool operator == (const String&) const;
+    bool operator ==(const char*) const;
+    bool operator ==(const String&) const;
 
-    bool operator != (const char*) const;
-    bool operator != (const String&) const;
+    bool operator !=(const char*) const;
+    bool operator !=(const String&) const;
 
 
     friend std::ostream &operator <<(std::ostream&, const String&);
@@ -315,14 +321,14 @@ public:
     void format() const{}
     template <typename T, typename... Tpack>
     void format(T first, Tpack... rest){
-        int ind = find('%');
+        int ind = find(String('%'));
 
         if(ind == -1) return;
 
         switch (m_Buff[ind+1]){
             case 'c':
                 cut(ind, 2);
-                insert((first), ind);
+                insert(String(first), ind);
                 break;
 
             case 'C':
@@ -330,12 +336,12 @@ public:
 
             case 'd':
                 cut(ind, 2);
-                insert(toString((first)), ind);
+                insert(String(first), ind);
                 break;
 
             case 'i':
                 cut(ind, 2);
-                insert(toString((first)), ind);
+                insert(String(first), ind);
                 break;
 
             case 'o':
@@ -344,7 +350,7 @@ public:
 
             case 'u':
                 cut(ind, 2);
-                insert(toString((first)), ind);
+                insert(String(first), ind);
                 break;
 
             case 'x':
@@ -356,13 +362,13 @@ public:
             case 'f':
             case 'F':
                 cut(ind, 2);
-                insert(toString((first)), ind);
+                insert(String(first), ind);
                 break;
 
             case 'g':
             case 'G':
                 cut(ind, 2);
-                insert(toString((first)), ind);
+                insert(String(first), ind);
                 break;
 
             case 'a':
@@ -377,12 +383,12 @@ public:
 
             case 's':
                 cut(ind, 2);
-                insert(first, ind);
+                insert(String(first), ind);
                 break;
 
             case 'S':
                 cut(ind, 2);
-                insert(first, ind);
+                insert(String(first), ind);
                 break;
 
             case 'z':
@@ -391,12 +397,13 @@ public:
 
         format(rest...);
     }
-
-
-    // template <typename T>
-    // String format_map(std::unordered_map<String, T>){
-
-    // }
+    
+    template <typename T, typename... Tpack>
+    String formatted(T first, Tpack... rest){
+        String ret(m_Buff);
+        ret.format(first, rest...);
+        return ret;
+    }
 
 
 };

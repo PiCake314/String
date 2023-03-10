@@ -8,8 +8,6 @@ String::String() : m_Size(0), m_Cap(1), enc(nullptr), dec(nullptr){
 
 
 String::String(const char c) : m_Size(1), m_Cap(2), enc(nullptr), dec(nullptr){
-    delete[] m_Buff;
-    m_Buff = new char[2];
     m_Buff[0] = c;
     m_Buff[1] = '\0';
 
@@ -26,7 +24,7 @@ String::String(const char *other) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
     m_Buff[m_Size] = '\0';
 
-    printf("Constructed!\n");
+    // printf("Constructed!\n");
 }
 
 
@@ -43,9 +41,100 @@ String::String(const String &other) : m_Cap(1), enc(nullptr), dec(nullptr){
 }
 
 
+
+String::String(const std::string &other) : m_Cap(1), enc(nullptr), dec(nullptr){
+
+    for(m_Size = 0; other[m_Size] != '\0'; m_Size++){
+        if(m_Size >= m_Cap) doubleStr();
+
+        m_Buff[m_Size] = other[m_Size];
+    }
+    m_Buff[m_Size] = '\0';
+
+    // printf("Copied!\n");
+}
+
+
+String::String(int other) : m_Cap(1), enc(nullptr), dec(nullptr){
+    int Ipower = 1;
+    for(; other / Ipower != 0; Ipower *= 10);
+    Ipower /= 10;
+
+    for(m_Size = 0; other != 0; m_Size++, other %= Ipower, Ipower /= 10){
+        if(m_Size >= m_Cap) doubleStr();
+
+        m_Buff[m_Size] = other / Ipower + '0';
+    }
+    m_Buff[m_Size] = '\0';
+
+    // printf("Inted!\n");
+}
+    #include <iostream>
+
+String::String(float f, int precision) : m_Cap(1), enc(nullptr), dec(nullptr){
+    int power = 1;
+    for(int i = 0; i < precision; i++, power *= 10);
+
+    int other = f;
+    int dec = (f - other) * power;
+    power /= 10;
+
+    int Ipower = 1;
+    for(; other / Ipower >= 1; Ipower *= 10);
+    Ipower /= 10;
+    for(m_Size = 0; other != 0; m_Size++, other %= Ipower, Ipower /= 10){
+        if(m_Size >= m_Cap) doubleStr();
+        m_Buff[m_Size] = other / Ipower + '0';
+    }
+
+    m_Buff[m_Size++] = '.';
+
+    for(int i = 0; i < precision; i++, dec %= power, power /= 10){
+        if(m_Size >= m_Cap) doubleStr();
+
+        m_Buff[m_Size++] = dec / power + '0';
+    }
+
+    m_Buff[m_Size] = '\0';
+    // printf("Floated!\n");
+}
+
+String::String(double d, int precision) : m_Cap(1), enc(nullptr), dec(nullptr){
+    int power = 1;
+    for(int i = 0; i < precision; i++, power *= 10);
+
+    int other = d;
+    int dec = (d - other) * power;
+    power /= 10;
+
+
+    int Ipower = 1;
+    for(int i = 1; other / Ipower >= 1; i++, Ipower *= 10);
+    Ipower /= 10;
+    for(m_Size = 0; other != 0; m_Size++, other %= Ipower, other /= 10){
+        if(m_Size >= m_Cap) doubleStr();
+
+        m_Buff[m_Size] = other / Ipower + '0';
+    }
+
+    m_Buff[m_Size++] = '.';
+
+    for(int i = 0; i < precision; i++, dec %= power, power /= 10){
+        if(m_Size >= m_Cap) doubleStr();
+
+        m_Buff[m_Size++] = dec / power + '0';
+    }
+
+    m_Buff[m_Size] = '\0';
+    // printf("Doubled!\n");
+}
+
+
 String::~String(){
     // printf("Distructed!\nm_Buff: %s\nSize: %d\nCap: %d\n", m_Buff, m_Size, m_Cap);
-    delete[] m_Buff;
+    if(m_Buff) delete[] m_Buff;
+    m_Buff = nullptr;
+    // printf("Distructed!\n");
 }
 
 
@@ -445,6 +534,15 @@ bool String::isSpace() const{
 }
 
 
+// char *String::cString() const{
+//     char *ret = new char[m_Size+1];
+//     for(int i = 0; i < m_Size; i++)
+//         ret[i] = m_Buff[i];
+//     ret[m_Size] = '\0';
+//     return ret;
+// }
+
+
 void String::setEncryptionFunc(String(*func)(String)) { enc = func; }
 
 void String::setDecryptionFunc(String(*func)(String)) { dec = func; }
@@ -548,7 +646,7 @@ void String::operator=(const char *other){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Recons!\n");
+    // printf("Recons Char!\n");
 }
 
 
@@ -617,10 +715,10 @@ char* String::end() const{ return m_Buff + m_Size; }
 
 
 
-String String::toString(int num){
-    if(num == 0) return "";
-    return toString(num/10) + char((num%10)+48);
-}
+// String String::toString(int num){
+//     if(num == 0) return "";
+//     return toString(num/10) + char((num%10)+48);
+// }
 
 
 void String::doubleStr(){

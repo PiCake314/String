@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "cstdio": "cpp",
+        "stdbool.h": "c",
+        "iosfwd": "cpp"
+    }
+}

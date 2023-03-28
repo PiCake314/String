@@ -22,6 +22,7 @@ public:
     String();
     String(const char*);
     String(const String&);
+    String(String&&);
     String(const std::string&);
     explicit String(const char);
     explicit String(int);
@@ -287,11 +288,11 @@ public:
 
     friend String operator +(const String&, const String&);
 
-    void operator +=(const String&);
+    String operator +=(const String&);
 
     friend String operator +(const String&, const char);
 
-    void operator +=(const char);
+    String operator +=(const char);
 
     void operator =(const char*);
 

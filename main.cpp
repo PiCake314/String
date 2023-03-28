@@ -1,9 +1,15 @@
 #include <iostream>
-#include "string.hpp"
+#include "String.hpp"
 
 
-int main() {
-    String name = "Yan";
+void func(String str){
+    std::cout << str << std::endl;
+}
 
-    std::cout << name << std::endl;
+
+int main(){
+
+    func("Meow");
+
+
 }

@@ -1,9 +1,9 @@
-#include "string.hpp"
+#include "String.hpp"
 
 
 String::String() : m_Size(0), m_Cap(1), enc(nullptr), dec(nullptr){
     m_Buff[0] = char(NULL); 
-    // printf("Default!\n");
+    printf("Default!\n");
 }
 
 
@@ -11,7 +11,7 @@ String::String(const char c) : m_Size(1), m_Cap(2), enc(nullptr), dec(nullptr){
     m_Buff[0] = c;
     m_Buff[1] = '\0';
 
-    // printf("Char'd!\n");
+    printf("Char'd!\n");
 }
 
 
@@ -24,7 +24,7 @@ String::String(const char *other) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Constructed!\n");
+    printf("Constructed!\n");
 }
 
 
@@ -37,7 +37,13 @@ String::String(const String &other) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Copied!\n");
+    printf("Copied!\n");
+}
+
+
+String::String(String &&other) : m_Cap(other.m_Cap), m_Size(other.m_Size), m_Buff(other.m_Buff), enc(nullptr), dec(nullptr){
+    other.m_Buff = nullptr;
+    printf("Moved!\n");
 }
 
 
@@ -51,7 +57,7 @@ String::String(const std::string &other) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Copied!\n");
+    printf("Copied!\n");
 }
 
 
@@ -67,7 +73,7 @@ String::String(int other) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
     m_Buff[m_Size] = '\0';
 
-    // printf("Inted!\n");
+    printf("Inted!\n");
 }
     #include <iostream>
 
@@ -96,7 +102,7 @@ String::String(float f, int precision) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
 
     m_Buff[m_Size] = '\0';
-    // printf("Floated!\n");
+    printf("Floated!\n");
 }
 
 String::String(double d, int precision) : m_Cap(1), enc(nullptr), dec(nullptr){
@@ -126,7 +132,7 @@ String::String(double d, int precision) : m_Cap(1), enc(nullptr), dec(nullptr){
     }
 
     m_Buff[m_Size] = '\0';
-    // printf("Doubled!\n");
+    printf("Doubled!\n");
 }
 
 
@@ -134,7 +140,7 @@ String::~String(){
     // printf("Distructed!\nm_Buff: %s\nSize: %d\nCap: %d\n", m_Buff, m_Size, m_Cap);
     if(m_Buff) delete[] m_Buff;
     m_Buff = nullptr;
-    // printf("Distructed!\n");
+    printf("Distructed!\n");
 }
 
 
@@ -606,7 +612,7 @@ String operator+(const String &us, const String &other){
 }
 
 
-void String::operator+=(const String &other){
+String String::operator+=(const String &other){
     int size = m_Size + other.m_Size;
 
     for(int s = 0; s < other.m_Size; s++){
@@ -616,6 +622,8 @@ void String::operator+=(const String &other){
     }
 
     m_Buff[size] = '\0';
+
+    return *this;
 }
 
 
@@ -629,10 +637,12 @@ String operator+(const String &us, const char c){
 }
 
 
-void String::operator+=(const char c){
+String String::operator+=(const char c){
     if(m_Size >= m_Cap) doubleStr();
     m_Buff[m_Size++] = c;
     m_Buff[m_Size] = '\0';
+
+    return *this;
 }
 
 

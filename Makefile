@@ -1,9 +1,9 @@
 
-main: main.cpp string.hpp string.cpp
-	g++ -std=c++2a main.cpp string.cpp && ./a.out
+main: main.cpp String.hpp String.cpp
+	g++ -std=c++20 main.cpp String.cpp && ./a.out
 
-test: main.cpp string.hpp string.cpp
-	g++ main.cpp string.cpp && valgrind --leak-check=full ./a.out
+test: main.cpp String.hpp String.cpp
+	g++ main.cpp String.cpp && valgrind --leak-check=full ./a.out
 
-clear: main.cpp string.hpp string.cpp
-	clear && g++ -std=c++2a main.cpp string.cpp && ./a.out
+clear: main.cpp String.hpp String.cpp
+	clear && g++ -std=c++2a main.cpp String.cpp && ./a.out

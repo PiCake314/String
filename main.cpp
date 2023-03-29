@@ -9,7 +9,11 @@ void func(String str){
 
 int main(){
 
-    func("Meow");
+    String s = "Hello, my name is %s, I am %d years old!";
+
+    s.format("Ali", 21);
+
+    std::cout << s << std::endl;
 
 
 }

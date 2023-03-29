@@ -42,6 +42,7 @@ String::String(const String &other) : m_Cap(1), enc(nullptr), dec(nullptr){
 
 
 String::String(String &&other) : m_Cap(other.m_Cap), m_Size(other.m_Size), m_Buff(other.m_Buff), enc(nullptr), dec(nullptr){
+    other.m_Size = 0;
     other.m_Buff = nullptr;
     printf("Moved!\n");
 }
